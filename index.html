@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>UNAD - Campus Virtual | Sistema de Transición Curricular ECISA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #f8f9fa; margin: 0; padding: 0; color: #333333; }
+
+    /* Barra Superior del Campus */
+    .top-nav {
+      background-color: #ffffff;
+      border-bottom: 2px solid #ffb81c;
+      padding: 6px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #4a5568;
+    }
+    .top-nav-links a {
+      color: #333333;
+      text-decoration: none;
+      margin-right: 18px;
+      font-weight: 500;
+    }
+    .top-nav-links a:hover { color: #005883; }
+    .top-nav-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-salir {
+      background-color: #ffb81c;
+      color: #333333;
+      font-weight: bold;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .btn-salir:hover { background-color: #e5a415; }
+
+    /* Franja del Logo e Idioma */
+    .brand-header {
+      background: #ffffff;
+      padding: 14px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .unad-logo-text {
+      font-size: 26px;
+      font-weight: 900;
+      color: #005883;
+      letter-spacing: -1px;
+    }
+    .unad-logo-text span { color: #f39200; }
+    .unad-divider {
+      height: 24px;
+      width: 1px;
+      background-color: #cbd5e0;
+      margin: 0 4px;
+    }
+    .campus-badge {
+      font-size: 12px;
+      font-weight: bold;
+      color: #005883;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Pestañas de Programas Estilo UNAD */
+    .tabs-wrapper {
+      background-color: #005883;
+      display: flex;
+      padding: 0 30px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 13px 20px;
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 4px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: #ffffff; background: rgba(255,255,255,0.08); }
+    .tab-btn.active {
+      color: #ffffff;
+      border-bottom-color: #ffb81c;
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    /* Contenedor Principal */
+    .main-container {
+      max-width: 1280px;
+      margin: 25px auto;
+      padding: 0 20px;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Tarjetas Modulares */
+    .unad-card {
+      background: #ffffff;
+      border: 1px solid #e1e6eb;
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .unad-card h2 {
+      margin-top: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #005883;
+      border-bottom: 1.5px solid #f0f4f8;
+      padding-bottom: 9px;
+    }
+
+    /* Zona de Carga PDF */
+    .dropzone {
+      border: 2px dashed #005883;
+      background: #fbfcfe;
+      border-radius: 8px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .dropzone:hover { background: #f0f7fb; }
+    .dropzone input { display: none; }
+    .dropzone-icon { font-size: 30px; margin-bottom: 6px; }
+
+    /* Ficha del Estudiante */
+    .student-panel {
+      background: linear-gradient(135deg, #005883 0%, #003853 100%);
+      color: white;
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+    .student-panel h3 {
+      margin: 0 0 12px 0;
+      font-size: 15px;
+      color: #ffb81c;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    .student-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      font-size: 13px;
+    }
+    .student-item span {
+      color: #b0c9d9;
+      font-size: 11px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .student-item strong { font-size: 13.5px; color: #ffffff; }
+
+    /* Bloque de KPIs */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid #e1e6eb;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .kpi-icon-box {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .kpi-text .num { font-size: 22px; font-weight: bold; line-height: 1.1; }
+    .kpi-text .label { font-size: 11.5px; color: #6c757d; margin-top: 2px; font-weight: 500; }
+    .kpi-blue { background: #eef6fa; color: #005883; }
+    .kpi-green { background: #eef9f2; color: #1e7e34; }
+    .kpi-yellow { background: #fff8eb; color: #b7791f; }
+    .kpi-red { background: #fdf2f2; color: #c53030; }
+
+    /* Tablas Institucionales */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12.5px; }
+    th, td { border: 1px solid #e9ecef; padding: 8px 10px; text-align: left; }
+    th { background: #f4f7f9; color: #005883; font-weight: 600; }
+    tr:nth-child(even) { background-color: #fafbfc; }
+    
+    .badge-warn { background: #fed7d7; color: #742a2a; padding: 3px 7px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .muted { color: #6c757d; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- Barra Superior -->
+  <div class="top-nav">
+    <div class="top-nav-links">
+      <a href="#">Inicio</a>
+      <a href="#">Vida académica</a>
+      <a href="#">Servicios</a>
+      <a href="#">Académico</a>
+      <a href="#">Ayuda</a>
+    </div>
+    <div class="top-nav-user">
+      <span style="font-weight: 600; color: #333;" id="nav-user-name">USUARIO ECISA</span>
+      <button class="btn-salir" onclick="location.reload()">⎋ Salir</button>
+    </div>
+  </div>
+
+  <!-- Encabezado Logo UNAD -->
+  <div class="brand-header">
+    <div class="brand-logo">
+      <div class="unad-logo-text">UN<span>A</span>D</div>
+      <div class="unad-divider"></div>
+      <div class="campus-badge">CAMPUS VIRTUAL</div>
+    </div>
+    <div style="font-size: 12.5px; color: #4a5568;">🌐 <strong>Español</strong></div>
+  </div>
+
+  <!-- Menú de Programas ECISA -->
+  <div class="tabs-wrapper">
+    <button class="tab-btn active" onclick="cambiarPestana('regencia', this)">Tecnología en Regencia de Farmacia (Res. 1309)</button>
+    <button class="tab-btn" onclick="cambiarPestana('salud', this)">Administración en Salud (Res. 24218)</button>
+    <button class="tab-btn" onclick="cambiarPestana('sst', this)">Seguridad y Salud en el Trabajo (Profesional / Res. 14301)</button>
+  </div>
+
+  <div class="main-container">
+
+    <!-- ============================================== -->
+    <!-- PROGRAMA 1: REGENCIA DE FARMACIA -->
+    <!-- ============================================== -->
+    <div id="tab-regencia" class="tab-content active">
+      <div class="unad-card">
+        <h2>Transición Curricular: Tecnología en Regencia de Farmacia</h2>
+        <p class="muted">Equivalencias entre la <strong>Resolución 08200 de 2015</strong> y la <strong>Resolución 1309 de 2023</strong> (Acuerdo 040 de 2021).</p>
+        
+        <div class="dropzone" onclick="document.getElementById('pdfInputReg').click()">
+          <div class="dropzone-icon">📄</div>
+          <strong style="color: #005883; font-size: 14.5px;">Haz clic aquí o arrastra el reporte PDF de Regencia de Farmacia</strong>
+          <input type="file" id="pdfInputReg" accept="application/pdf" onchange="procesarPDF(this, 'regencia')">
+        </div>
+      </div>
+
+      <div id="resultados-regencia" style="display:none;">
+        <div class="student-panel">
+          <h3>INFORMACIÓN DEL ESTUDIANTE</h3>
+          <div class="student-grid">
+            <div class="student-item"><span>Nombre</span><strong id="reg-nombre">-</strong></div>
+            <div class="student-item"><span>Identificación</span><strong id="reg-doc">-</strong></div>
+            <div class="student-item"><span>Programa Registrado</span><strong id="reg-prog">-</strong></div>
+            <div class="student-item"><span>Centro / CEAD</span><strong id="reg-centro">-</strong></div>
+            <div class="student-item"><span>Fecha de Consulta</span><strong id="reg-fecha">-</strong></div>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-icon-box kpi-blue">📚</div><div class="kpi-text"><div class="num" id="reg-kpi-ident">0</div><div class="label">Aprobadas Vistas</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-green">✔</div><div class="kpi-text"><div class="num" id="reg-kpi-homol">0</div><div class="label">Homologadas Plan 1309</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-yellow">⏳</div><div class="kpi-text"><div class="num" id="reg-kpi-pend">0</div><div class="label">Pendientes por Cursar</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-red">✖</div><div class="kpi-text"><div class="num" id="reg-kpi-sobr">0</div><div class="label">No Equivalentes / Sobrantes</div></div></div>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #c53030;">⚠️ Materias Vistas NO Homologables o Sobrantes en Plan 1309</h2>
+          <table>
+            <thead><tr><th style="width: 100px;">Código</th><th>Nombre de la Asignatura</th><th style="width: 80px; text-align: center;">Créditos</th><th>Observación Normativa</th></tr></thead>
+            <tbody id="reg-tbodyNoEquiv"></tbody>
+          </table>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #b7791f;">⏳ Asignaturas Pendientes por Ver (Resolución 1309 de 2023)</h2>
+          <table>
+            <thead><tr><th style="width: 60px; text-align: center;">Sem.</th><th style="width: 110px;">Código</th><th>Asignatura Requerida</th><th style="width: 65px; text-align: center;">Créditos</th><th style="width: 60px; text-align: center;">Tipo</th><th>Condición de Oferta</th></tr></thead>
+            <tbody id="reg-tbodyPendientes"></tbody>
+          </table>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #1e7e34;">✅ Asignaturas Homologadas y Reconocidas (Resolución 1309 de 2023)</h2>
+          <table>
+            <thead><tr><th style="width: 60px; text-align: center;">Sem.</th><th style="width: 110px;">Código Nuevo</th><th>Asignatura Plan 1309</th><th style="width: 65px; text-align: center;">Créditos</th><th>Equivalencia Otorgada / Asignatura Origen</th><th style="width: 80px; text-align: center;">Nota</th></tr></thead>
+            <tbody id="reg-tbodyHomologadas"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PROGRAMA 2: ADMINISTRACIÓN EN SALUD -->
+    <!-- ============================================== -->
+    <div id="tab-salud" class="tab-content">
+      <div class="unad-card">
+        <h2>Transición Curricular: Administración en Salud</h2>
+        <p class="muted">Equivalencias entre la <strong>Resolución 17744 de 2014</strong> y la renovada <strong>Resolución 24218 de 2021</strong> (149 créditos).</p>
+        
+        <div class="dropzone" onclick="document.getElementById('pdfInputSal').click()">
+          <div class="dropzone-icon">📄</div>
+          <strong style="color: #005883; font-size: 14.5px;">Haz clic aquí o arrastra el reporte PDF de Administración en Salud</strong>
+          <input type="file" id="pdfInputSal" accept="application/pdf" onchange="procesarPDF(this, 'salud')">
+        </div>
+      </div>
+
+      <div id="resultados-salud" style="display:none;">
+        <div class="student-panel">
+          <h3>INFORMACIÓN DEL ESTUDIANTE</h3>
+          <div class="student-grid">
+            <div class="student-item"><span>Nombre</span><strong id="sal-nombre">-</strong></div>
+            <div class="student-item"><span>Identificación</span><strong id="sal-doc">-</strong></div>
+            <div class="student-item"><span>Programa Registrado</span><strong id="sal-prog">-</strong></div>
+            <div class="student-item"><span>Centro / CEAD</span><strong id="sal-centro">-</strong></div>
+            <div class="student-item"><span>Fecha de Consulta</span><strong id="sal-fecha">-</strong></div>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-icon-box kpi-blue">📚</div><div class="kpi-text"><div class="num" id="sal-kpi-ident">0</div><div class="label">Aprobadas Vistas</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-green">✔</div><div class="kpi-text"><div class="num" id="sal-kpi-homol">0</div><div class="label">Homologadas Plan 24218</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-yellow">⏳</div><div class="kpi-text"><div class="num" id="sal-kpi-pend">0</div><div class="label">Pendientes por Cursar</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-red">✖</div><div class="kpi-text"><div class="num" id="sal-kpi-sobr">0</div><div class="label">No Homologables / Retiradas</div></div></div>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #c53030;">⚠️ Materias Vistas NO Equivalentes o Eliminadas en Plan 24218</h2>
+          <table>
+            <thead><tr><th style="width: 100px;">Código</th><th>Nombre de la Asignatura</th><th style="width: 80px; text-align: center;">Créditos</th><th>Observación Normativa</th></tr></thead>
+            <tbody id="sal-tbodyNoEquiv"></tbody>
+          </table>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #b7791f;">⏳ Asignaturas Pendientes por Ver (Resolución 24218 de 2021)</h2>
+          <table>
+            <thead><tr><th style="width: 60px; text-align: center;">Sem.</th><th style="width: 110px;">Código</th><th>Asignatura Requerida</th><th style="width: 65px; text-align: center;">Créditos</th><th style="width: 60px; text-align: center;">Tipo</th><th>Condición de Oferta</th></tr></thead>
+            <tbody id="sal-tbodyPendientes"></tbody>
+          </table>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #1e7e34;">✅ Asignaturas Homologadas y Reconocidas (Resolución 24218 de 2021)</h2>
+          <table>
+            <thead><tr><th style="width: 60px; text-align: center;">Sem.</th><th style="width: 110px;">Código Nuevo</th><th>Asignatura Plan 24218</th><th style="width: 65px; text-align: center;">Créditos</th><th>Equivalencia Otorgada / Asignatura Origen</th><th style="width: 80px; text-align: center;">Nota</th></tr></thead>
+            <tbody id="sal-tbodyHomologadas"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PROGRAMA 3: SEGURIDAD Y SALUD EN EL TRABAJO -->
+    <!-- ============================================== -->
+    <div id="tab-sst" class="tab-content">
+      <div class="unad-card">
+        <h2>Transición Curricular: Seguridad y Salud en el Trabajo</h2>
+        <p class="muted">Equivalencias y articulación desde la <strong>Tecnología en SST (Resolución 14301 de 2015 / Acuerdo 20 de 2021)</strong> hacia el plan de formación <strong>Profesional en Seguridad y Salud en el Trabajo</strong>.</p>
+        
+        <div class="dropzone" onclick="document.getElementById('pdfInputSST').click()">
+          <div class="dropzone-icon">📄</div>
+          <strong style="color: #005883; font-size: 14.5px;">Haz clic aquí o arrastra el reporte PDF de Seguridad y Salud en el Trabajo</strong>
+          <input type="file" id="pdfInputSST" accept="application/pdf" onchange="procesarPDF(this, 'sst')">
+        </div>
+      </div>
+
+      <div id="resultados-sst" style="display:none;">
+        <div class="student-panel">
+          <h3>INFORMACIÓN DEL ESTUDIANTE</h3>
+          <div class="student-grid">
+            <div class="student-item"><span>Nombre</span><strong id="sst-nombre">-</strong></div>
+            <div class="student-item"><span>Identificación</span><strong id="sst-doc">-</strong></div>
+            <div class="student-item"><span>Programa Registrado</span><strong id="sst-prog">-</strong></div>
+            <div class="student-item"><span>Centro / CEAD</span><strong id="sst-centro">-</strong></div>
+            <div class="student-item"><span>Fecha de Consulta</span><strong id="sst-fecha">-</strong></div>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-icon-box kpi-blue">📚</div><div class="kpi-text"><div class="num" id="sst-kpi-ident">0</div><div class="label">Aprobadas Vistas</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-green">✔</div><div class="kpi-text"><div class="num" id="sst-kpi-homol">0</div><div class="label">Homologadas Plan Profesional</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-yellow">⏳</div><div class="kpi-text"><div class="num" id="sst-kpi-pend">0</div><div class="label">Pendientes por Cursar</div></div></div>
+          <div class="kpi-card"><div class="kpi-icon-box kpi-red">✖</div><div class="kpi-text"><div class="num" id="sst-kpi-sobr">0</div><div class="label">No Equivalentes / Sobrantes</div></div></div>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #c53030;">⚠️ Materias Vistas NO Equivalentes en Plan Profesional de SST</h2>
+          <table>
+            <thead><tr><th style="width: 100px;">Código</th><th>Nombre de la Asignatura</th><th style="width: 80px; text-align: center;">Créditos</th><th>Observación Normativa</th></tr></thead>
+            <tbody id="sst-tbodyNoEquiv"></tbody>
+          </table>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #b7791f;">⏳ Asignaturas Pendientes por Ver (Profesional en SST)</h2>
+          <table>
+            <thead><tr><th style="width: 60px; text-align: center;">Sem.</th><th style="width: 110px;">Código</th><th>Asignatura Requerida</th><th style="width: 65px; text-align: center;">Créditos</th><th style="width: 60px; text-align: center;">Tipo</th><th>Condición de Oferta</th></tr></thead>
+            <tbody id="sst-tbodyPendientes"></tbody>
+          </table>
+        </div>
+
+        <div class="unad-card">
+          <h2 style="color: #1e7e34;">✅ Asignaturas Homologadas y Reconocidas (Profesional en SST)</h2>
+          <table>
+            <thead><tr><th style="width: 60px; text-align: center;">Sem.</th><th style="width: 110px;">Código Nuevo</th><th>Asignatura Profesional SST</th><th style="width: 65px; text-align: center;">Créditos</th><th>Equivalencia Otorgada / Asignatura Origen</th><th style="width: 80px; text-align: center;">Nota</th></tr></thead>
+            <tbody id="sst-tbodyHomologadas"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    function cambiarPestana(programa, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${programa}`).classList.add('active');
+    }
+
+    // Catálogo Maestro de Asignaturas ECISA (UNAD)
+    const catalogoNombres = {
+      // Formación Común y Sociohumanística
+      "434206": "Cátedra Unadista", "80017": "Cátedra Unadista",
+      "40001": "Ética y Ciudadanía", "40002": "Ética y Ciudadanía", "50010": "Competencias Comunicativas", "40003": "Competencias Comunicativas",
+      "200612": "Fundamentos de Matemáticas", "200611": "Pensamiento Lógico y Matemático",
+      "200610": "Herramientas Digitales para la Gestión del Conocimiento", "221120": "Herramientas Teleinformáticas",
+      "151009": "Biología Celular y Molecular", "112001": "Fundamentos en Gestión Integral",
+      "900001": "Inglés A1 / Lengua Extranjera 1", "90030": "Inglés 0",
+      "900002": "Inglés A2 / Lengua Extranjera 2", "90008": "Inglés 1",
+      "900003": "Inglés B1 / Lengua Extranjera 3", "900005": "Inglés B2 / Lengua Extranjera 4",
+      "150001": "Fundamentos y Generalidades de Investigación", "100103": "Metodología de la Investigación",
+      "151001": "Bioética", "15001": "Telesalud", "401503": "Morfofisiología", "152978028": "Morfofisiología",
+      "151030": "Bioquímica", "201103": "Bioquímica", "151005": "Patología General",
+      "151003": "Bioestadística", "211622": "Estadística y Probabilidad", "153024": "Sistemas Integrados de Gestión",
+      
+      // Regencia de Farmacia
+      "90015": "Introducción a la Regencia en Farmacia", "201102": "Química General", "151006": "Microbiología",
+      "100416": "Química Orgánica", "153218334": "Procesos Generales y Especiales del Serv. Farmacéutico",
+      "152001": "Farmacotecnia", "153218352": "Farmacotecnia (3C)", "201421": "Farmacognosia",
+      "153218335": "Farmacia Comunitaria", "301568": "Servicio Comunitario", "152003": "Farmacología",
+      "153218336": "Farmacología I", "153218337": "Farmacología II", "301504": "Legislación Farmacéutica",
+      "153218339": "Telefarmacia", "301505": "Administración de Farmacias", "153218338": "Trabajo de Grado (Regencia)",
+      "301502": "Toxicología", "152002": "Práctica Profesional (Regencia)", "301506": "Atención Farmacéutica", "301507": "Farmacia Hospitalaria",
+      
+      // Administración en Salud
+      "152978027": "Fundamentos de la Administración en Salud", "151010": "Morfofisiología I", "151002": "Morfofisiología II",
+      "152978029": "Salud Pública I", "152978030": "Contabilidad en Salud", "151004": "Administración en Salud",
+      "403037": "Cibercultura", "152978031": "Economía en Salud", "152978032": "Legislación y Sistemas en Salud",
+      "151012": "Legislación y Sistemas en Salud (2C)", "152978033": "Salud Pública II", "152978034": "Farmacoeconomía",
+      "151014": "Semiología", "151018": "Farmacología (Salud)", "151019": "Gestión Financiera en Salud",
+      "152978035": "Sistemas de Información y Calidad en Salud", "151016": "Sistemas de Información y Calidad (2C)",
+      "151027": "Políticas Públicas", "151013": "Epidemiología General", "151015": "Gerencia y Mercadeo en Salud",
+      "152978036": "Gerencia de Servicios de Salud", "152978037": "Procesos Administrativos y Facturación",
+      "151020": "Proceso Administrativo Asistencial I", "151021": "Geopolítica y Medio Ambiente",
+      "152978038": "Gestión Territorial de la Salud", "152978039": "Gestión e Innovación en Salud",
+      "151023": "Gestión Estratégica en Salud", "152978040": "Contratación y Talento Humano en Salud",
+      "151024": "Proceso Administrativo Asistencial II", "151025": "Seminario de Investigación",
+      "152978041": "Auditoría y Calidad en Salud", "151051": "Trabajo de Grado (Salud)", "152978042": "Práctica Profesional (Salud 6C)",
+      "151022": "Práctica Profesional I (3C)", "151026": "Práctica Profesional II (3C)", "151028": "Práctica Profesional III (3C)",
+      
+      // Seguridad y Salud en el Trabajo (Tecnología y Profesional)
+      "153048129": "Sociología del Trabajo",
+      "153001": "Fundamentos de Seguridad y Salud en el Trabajo",
+      "153002": "Fundamentos de Salud Pública",
+      "153026": "Administración en Salud (SST)", "153028": "Administración en Salud",
+      "153010": "Condiciones de la Organización del Trabajo",
+      "153048130": "Física Aplicada",
+      "153048131": "Biomecánica",
+      "153004": "Medicina Preventiva y del Trabajo", "153048231": "Medicina Preventiva y del Trabajo",
+      "153006": "Condiciones de la Tarea I", "153048232": "Condiciones de la Tarea I",
+      "153008": "Condiciones de Seguridad I", "153048235": "Condiciones de Seguridad I",
+      "153003": "Vigilancia Epidemiológica", "153048234": "Vigilancia Epidemiológica",
+      "153048132": "Toxicología Ocupacional",
+      "153007": "Condiciones de la Tarea II", "153048233": "Condiciones de la Tarea II",
+      "153009": "Condiciones de Seguridad II", "153048236": "Condiciones de Seguridad II",
+      "153005": "Condiciones del Ambiente de Trabajo", "153048133": "Condiciones del Ambiente de Trabajo I",
+      "153048134": "Condiciones del Ambiente de Trabajo II",
+      "153048138": "Legislación en Seguridad y Salud en el Trabajo", "153017": "Legislación en Riesgos Laborales",
+      "153048135": "Seminario de Investigación (SST)",
+      "153020": "Gestión Ambiental",
+      "153012": "Trabajo de Grado (TSST)", "153048137": "Trabajo de Grado (PSST)",
+      "153011": "Práctica Profesional (TSST 5C/6C)", "153048136": "Práctica Profesional (PSST 6C)",
+      
+      // Electivas SST
+      "153048225": "Seguridad Vial", "153048226": "Tareas de Alto Riesgo", "153016": "Formulación y Evaluación de Proyectos SST",
+      "153048228": "Gestión de Riesgo de Desastres", "153048227": "Sistemas de Gestión en SST", "153048237": "Comportamiento Organizacional",
+      "153048229": "TIC Aplicadas a la Gestión de SST", "153021": "Ergonomía", "153023": "Psicología Organizacional",
+      "153019": "Garantía de Calidad del SG-RL", "153013": "Equidad en los Servicios de Salud", "153014": "Promoción de la Salud y Calidad de Vida en Trabajo",
+      "153015": "Entornos de Trabajo Saludables", "153018": "Participación Social, Comunitaria y Ciudadana",
+      
+      // Formación Complementaria / Bienestar
+      "80020": "Actividad Física para la Salud", "80003": "Salud Oral", "80002": "Proyecto de Vida",
+      "80004": "La Persona como Ser Trascendente", "80007": "Protocolo", "80005": "Guitarra", "80010": "Teatro",
+      "404086996": "Apreciación de las Imágenes del Arte", "400004": "Acondicionamiento Físico y Bienestar",
+      "80011": "Discapacidad y Sexualidad", "80012": "Danza", "80008": "Pedagogía para la Solución de Conflictos",
+      "100104": "Técnicas de Investigación", "153022": "Costos y Presupuestos", "151050": "Terapias Naturales",
+      "151054": "Bioseguridad", "151057": "Cuidados Básicos de Enfermería", "151053": "Atención Psicosocial a Víctimas",
+      "151055": "Primer Respondiente", "151056": "Educación para la Salud", "120002": "Responsabilidad Social Empresarial",
+      "40004": "Inclusión Social", "105020": "Emprendimiento Solidario", "358028": "Educación Ambiental",
+      "40006": "Sostenibilidad, Desarrollo y Calidad de Vida", "90007": "Cultura Política", "50019": "Lectura Crítica",
+      "700004": "Servicio Social Unadista (SISSU)"
+    };
+
+    // Malla Oficial Regencia de Farmacia (Res. 1309 de 2023)
+    const mallaRegencia = [
+      { sem: "I", cod: "80017", nom: "Cátedra Unadista", cr: 3, tipo: "T" },
+      { sem: "I", cod: "40002", nom: "Ética y Ciudadanía", cr: 3, tipo: "T" },
+      { sem: "I", cod: "200612", nom: "Fundamentos de Matemáticas", cr: 3, tipo: "T" },
+      { sem: "I", cod: "200610", nom: "Herramientas Digitales para la Gestión", cr: 3, tipo: "TP" },
+      { sem: "I", cod: "151009", nom: "Biología Celular y Molecular", cr: 3, tipo: "TP" },
+      { sem: "I", cod: "90015", nom: "Introducción a la Regencia en Farmacia", cr: 2, tipo: "T" },
+      { sem: "II", cod: "900001", nom: "Inglés A1", cr: 3, tipo: "T" },
+      { sem: "II", cod: "90003", nom: "Competencias Comunicativas", cr: 2, tipo: "TP" },
+      { sem: "II", cod: "151003", nom: "Bioestadística", cr: 3, tipo: "T" },
+      { sem: "II", cod: "201102", nom: "Química General", cr: 3, tipo: "TP" },
+      { sem: "II", cod: "151006", nom: "Microbiología", cr: 3, tipo: "TP" },
+      { sem: "II", cod: "ELECT_IBC_1", nom: "Electivo Interdisciplinar Básico Común I", cr: 2, tipo: "T" },
+      { sem: "III", cod: "900002", nom: "Inglés A2", cr: 3, tipo: "TP" },
+      { sem: "III", cod: "401503", nom: "Morfofisiología", cr: 3, tipo: "TP" },
+      { sem: "III", cod: "150001", nom: "Fundamentos y Generalidades de Investigación", cr: 3, tipo: "TP" },
+      { sem: "III", cod: "100416", nom: "Química Orgánica", cr: 3, tipo: "T" },
+      { sem: "III", cod: "153218334", nom: "Procesos Generales y Especiales del Serv. Farmacéutico", cr: 3, tipo: "TP" },
+      { sem: "III", cod: "ELECT_IBC_2", nom: "Electivo Interdisciplinar Básico Común II", cr: 3, tipo: "T" },
+      { sem: "IV", cod: "153218352", nom: "Farmacotecnia", cr: 3, tipo: "TP" },
+      { sem: "IV", cod: "201421", nom: "Farmacognosia", cr: 3, tipo: "TP" },
+      { sem: "IV", cod: "153218335", nom: "Farmacia Comunitaria", cr: 3, tipo: "T", nuevo: true },
+      { sem: "IV", cod: "153218336", nom: "Farmacología I", cr: 2, tipo: "TP" },
+      { sem: "IV", cod: "201103", nom: "Bioquímica", cr: 3, tipo: "TP" },
+      { sem: "IV", cod: "ELECT_DISC_1", nom: "Electivo Disciplinar Específico I", cr: 2, tipo: "T" },
+      { sem: "V", cod: "153218337", nom: "Farmacología II", cr: 2, tipo: "T" },
+      { sem: "V", cod: "301504", nom: "Legislación Farmacéutica", cr: 3, tipo: "T" },
+      { sem: "V", cod: "153218339", nom: "Telefarmacia", cr: 3, tipo: "T", nuevo: true },
+      { sem: "V", cod: "301505", nom: "Administración de Farmacias", cr: 3, tipo: "T" },
+      { sem: "V", cod: "153218338", nom: "Trabajo de Grado", cr: 3, tipo: "T", nuevo: true },
+      { sem: "V", cod: "ELECT_COMP_1", nom: "Electivo Formación Complementaria I", cr: 1, tipo: "T" },
+      { sem: "VI", cod: "301502", nom: "Toxicología", cr: 2, tipo: "T" },
+      { sem: "VI", cod: "152002", nom: "Práctica Profesional", cr: 6, tipo: "P" },
+      { sem: "VI", cod: "ELECT_DISC_2", nom: "Electivo Disciplinar Específico II", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "ELECT_COMP_2", nom: "Electivo Formación Complementaria II", cr: 2, tipo: "T" }
+    ];
+
+    // Malla Oficial Administración en Salud (Res. 24218 de 2021)
+    const mallaSalud = [
+      { sem: "I", cod: "80017", nom: "Cátedra Unadista", cr: 3, tipo: "M" },
+      { sem: "I", cod: "40002", nom: "Ética y Ciudadanía", cr: 3, tipo: "T" },
+      { sem: "I", cod: "200611", nom: "Pensamiento Lógico y Matemático", cr: 3, tipo: "T" },
+      { sem: "I", cod: "152978027", nom: "Fundamentos de la Administración en Salud", cr: 2, tipo: "T", nuevo: true },
+      { sem: "I", cod: "151009", nom: "Biología Celular y Molecular", cr: 3, tipo: "M" },
+      { sem: "I", cod: "200610", nom: "Herramientas Digitales para la Gestión", cr: 3, tipo: "M" },
+      { sem: "II", cod: "900001", nom: "Formación en Lengua Extranjera 1", cr: 3, tipo: "M" },
+      { sem: "II", cod: "152978028", nom: "Morfofisiología", cr: 3, tipo: "TP" },
+      { sem: "II", cod: "ELECT_SOC_SOLID", nom: "Electivo Componente Social Solidario", cr: 3, tipo: "T/M" },
+      { sem: "II", cod: "112001", nom: "Fundamentos en Gestión Integral", cr: 3, tipo: "T" },
+      { sem: "II", cod: "151030", nom: "Bioquímica", cr: 3, tipo: "M" },
+      { sem: "II", cod: "151001", nom: "Bioética", cr: 2, tipo: "T" },
+      { sem: "III", cod: "900002", nom: "Formación en Lengua Extranjera 2", cr: 3, tipo: "M" },
+      { sem: "III", cod: "152978029", nom: "Salud Pública I", cr: 3, tipo: "T" },
+      { sem: "III", cod: "152978030", nom: "Contabilidad en Salud", cr: 3, tipo: "M", nuevo: true },
+      { sem: "III", cod: "ELECT_ECON_ADMIN", nom: "Electivo Componente Económico Administrativo", cr: 3, tipo: "T/M" },
+      { sem: "III", cod: "151004", nom: "Administración en Salud", cr: 3, tipo: "T" },
+      { sem: "III", cod: "40003", nom: "Competencias Comunicativas", cr: 3, tipo: "TP" },
+      { sem: "IV", cod: "900003", nom: "Formación en Lengua Extranjera 3", cr: 3, tipo: "M" },
+      { sem: "IV", cod: "15001", nom: "Telesalud", cr: 3, tipo: "TP" },
+      { sem: "IV", cod: "151003", nom: "Bioestadística", cr: 3, tipo: "M" },
+      { sem: "IV", cod: "151005", nom: "Patología General", cr: 3, tipo: "T" },
+      { sem: "IV", cod: "150001", nom: "Fundamentos y Generalidades de Investigación", cr: 3, tipo: "M" },
+      { sem: "IV", cod: "ELECT_DISC_COM_1", nom: "Curso Electivo Disciplinar Común I", cr: 3, tipo: "T" },
+      { sem: "V", cod: "900005", nom: "Formación en Lengua Extranjera 4", cr: 3, tipo: "M" },
+      { sem: "V", cod: "152978031", nom: "Economía en Salud", cr: 3, tipo: "T", nuevo: true },
+      { sem: "V", cod: "152978032", nom: "Legislación y Sistemas en Salud", cr: 3, tipo: "T" },
+      { sem: "V", cod: "152978033", nom: "Salud Pública II", cr: 3, tipo: "T", nuevo: true },
+      { sem: "V", cod: "152978034", nom: "Farmacoeconomía", cr: 2, tipo: "T", nuevo: true },
+      { sem: "V", cod: "ELECT_DISC_COM_2", nom: "Curso Electivo Disciplinar Común II", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "151019", nom: "Gestión Financiera en Salud", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "152978035", nom: "Sistemas de Información y Calidad en Salud", cr: 3, tipo: "M" },
+      { sem: "VI", cod: "151027", nom: "Políticas Públicas", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "151013", nom: "Epidemiología General", cr: 2, tipo: "T" },
+      { sem: "VI", cod: "ELECT_DISC_ESP_1", nom: "Curso Electivo Disciplinar Específico I", cr: 3, tipo: "T/M" },
+      { sem: "VI", cod: "ELECT_DISC_COM_3", nom: "Curso Electivo Disciplinar Común III", cr: 3, tipo: "T" },
+      { sem: "VII", cod: "152978036", nom: "Gerencia de Servicios de Salud", cr: 3, tipo: "T", nuevo: true },
+      { sem: "VII", cod: "152978037", nom: "Procesos Administrativos y Facturación", cr: 2, tipo: "T", nuevo: true },
+      { sem: "VII", cod: "151021", nom: "Geopolítica y Medio Ambiente", cr: 2, tipo: "T" },
+      { sem: "VII", cod: "ELECT_DISC_ESP_2", nom: "Curso Electivo Disciplinar Específico II", cr: 3, tipo: "T/M" },
+      { sem: "VII", cod: "152978038", nom: "Gestión Territorial de la Salud", cr: 3, tipo: "T", nuevo: true },
+      { sem: "VII", cod: "ELECT_COMP_1", nom: "Curso Electivo Formación Complementaria I", cr: 2, tipo: "T/M" },
+      { sem: "VIII", cod: "152978039", nom: "Gestión e Innovación en Salud", cr: 3, tipo: "T", nuevo: true },
+      { sem: "VIII", cod: "152978040", nom: "Contratación y Talento Humano en Salud", cr: 3, tipo: "M", nuevo: true },
+      { sem: "VIII", cod: "151025", nom: "Seminario de Investigación", cr: 3, tipo: "T" },
+      { sem: "VIII", cod: "ELECT_DISC_ESP_3", nom: "Curso Electivo Disciplinar Específico III", cr: 3, tipo: "T/M" },
+      { sem: "VIII", cod: "ELECT_COMP_2", nom: "Curso Electivo Formación Complementaria II", cr: 2, tipo: "T/M" },
+      { sem: "IX", cod: "152978041", nom: "Auditoría y Calidad en Salud", cr: 3, tipo: "T", nuevo: true },
+      { sem: "IX", cod: "151051", nom: "Trabajo de Grado", cr: 3, tipo: "M" },
+      { sem: "IX", cod: "ELECT_DISC_ESP_4", nom: "Curso Electivo Disciplinar Específico IV", cr: 2, tipo: "T/M" },
+      { sem: "IX", cod: "ELECT_COMP_3", nom: "Curso Electivo Formación Complementaria III", cr: 2, tipo: "T/M" },
+      { sem: "IX", cod: "152978042", nom: "Práctica Profesional", cr: 6, tipo: "P", nuevo: true }
+    ];
+
+    // Malla Oficial Profesional en Seguridad y Salud en el Trabajo (Articulado con TSST Res. 14301)
+    const mallaSST = [
+      { sem: "I", cod: "80017", nom: "Cátedra Unadista", cr: 3, tipo: "M" },
+      { sem: "I", cod: "200611", nom: "Pensamiento Lógico y Matemático", cr: 3, tipo: "T" },
+      { sem: "I", cod: "40002", nom: "Ética y Ciudadanía", cr: 3, tipo: "T" },
+      { sem: "I", cod: "200610", nom: "Herramientas Digitales para la Gestión", cr: 3, tipo: "M" },
+      { sem: "I", cod: "151009", nom: "Biología Celular y Molecular", cr: 3, tipo: "M" },
+      { sem: "I", cod: "153048129", nom: "Sociología del Trabajo", cr: 3, tipo: "T", nuevo: true },
+      
+      { sem: "II", cod: "900001", nom: "Inglés A1", cr: 3, tipo: "M" },
+      { sem: "II", cod: "112001", nom: "Fundamentos de Gestión Integral", cr: 3, tipo: "T" },
+      { sem: "II", cod: "ELECT_SOC_SOLID", nom: "Curso Electivo Componente Social Solidario", cr: 3, tipo: "T/M" },
+      { sem: "II", cod: "151001", nom: "Bioética", cr: 2, tipo: "T" },
+      { sem: "II", cod: "151030", nom: "Bioquímica", cr: 3, tipo: "M" },
+      { sem: "II", cod: "153001", nom: "Fundamentos en Seguridad y Salud en el Trabajo", cr: 3, tipo: "T" },
+
+      { sem: "III", cod: "900002", nom: "Inglés A2", cr: 3, tipo: "M" },
+      { sem: "III", cod: "150001", nom: "Fundamentos y Generalidades de Investigación", cr: 3, tipo: "M" },
+      { sem: "III", cod: "40003", nom: "Competencias Comunicativas", cr: 3, tipo: "T" },
+      { sem: "III", cod: "ELECT_ECON_ADMIN", nom: "Curso Electivo Componente Económico Administrativo", cr: 3, tipo: "T/M" },
+      { sem: "III", cod: "152978028", nom: "Morfofisiología", cr: 3, tipo: "M" },
+      { sem: "III", cod: "153002", nom: "Fundamentos de Salud Pública", cr: 3, tipo: "T" },
+
+      { sem: "IV", cod: "900003", nom: "Inglés B1", cr: 3, tipo: "M" },
+      { sem: "IV", cod: "ELECT_DISC_COM_1", nom: "Curso Electivo Componente Disciplinar Común I", cr: 3, tipo: "T/M" },
+      { sem: "IV", cod: "15001", nom: "Telesalud", cr: 3, tipo: "M" },
+      { sem: "IV", cod: "151005", nom: "Patología General", cr: 3, tipo: "T" },
+      { sem: "IV", cod: "153028", nom: "Administración en Salud", cr: 3, tipo: "T" },
+      { sem: "IV", cod: "153010", nom: "Condiciones de la Organización del Trabajo", cr: 3, tipo: "T" },
+
+      { sem: "V", cod: "900005", nom: "Inglés B2", cr: 3, tipo: "M" },
+      { sem: "V", cod: "ELECT_DISC_COM_2", nom: "Electivo Componente Disciplinar Común II", cr: 3, tipo: "T/M" },
+      { sem: "V", cod: "151003", nom: "Bioestadística", cr: 3, tipo: "M" },
+      { sem: "V", cod: "153048130", nom: "Física Aplicada", cr: 2, tipo: "T", nuevo: true },
+      { sem: "V", cod: "153048131", nom: "Biomecánica", cr: 3, tipo: "M", nuevo: true },
+      { sem: "V", cod: "153048231", nom: "Medicina Preventiva y del Trabajo", cr: 3, tipo: "T" },
+
+      { sem: "VI", cod: "153024", nom: "Sistemas Integrados de Gestión", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "153048232", nom: "Condiciones de la Tarea I", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "153048235", nom: "Condiciones de Seguridad I", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "153048234", nom: "Vigilancia Epidemiológica", cr: 3, tipo: "T" },
+      { sem: "VI", cod: "153048132", nom: "Toxicología Ocupacional", cr: 2, tipo: "T", nuevo: true },
+      { sem: "VI", cod: "ELECT_DISC_ESP_1", nom: "Electivo Componente Disciplinar Específico I", cr: 3, tipo: "T/M" },
+
+      { sem: "VII", cod: "ELECT_COMP_1", nom: "Electivo Componente Formación Complementaria I", cr: 2, tipo: "T/M" },
+      { sem: "VII", cod: "153048233", nom: "Condiciones de la Tarea II", cr: 3, tipo: "T" },
+      { sem: "VII", cod: "153048236", nom: "Condiciones de Seguridad II", cr: 3, tipo: "T" },
+      { sem: "VII", cod: "153048133", nom: "Condiciones del Ambiente de Trabajo I", cr: 3, tipo: "M" },
+      { sem: "VII", cod: "ELECT_DISC_ESP_2", nom: "Electivo Componente Disciplinar Específico II", cr: 3, tipo: "T/M" },
+
+      { sem: "VIII", cod: "ELECT_COMP_2", nom: "Electivo Componente Formación Complementaria II", cr: 2, tipo: "T/M" },
+      { sem: "VIII", cod: "153048138", nom: "Legislación en Seguridad y Salud en el Trabajo", cr: 3, tipo: "T" },
+      { sem: "VIII", cod: "153048135", nom: "Seminario de Investigación", cr: 3, tipo: "M" },
+      { sem: "VIII", cod: "153048134", nom: "Condiciones del Ambiente de Trabajo II", cr: 3, tipo: "M", nuevo: true },
+      { sem: "VIII", cod: "ELECT_DISC_ESP_3", nom: "Electivo Componente Disciplinar Específico III", cr: 3, tipo: "T/M" },
+
+      { sem: "IX", cod: "ELECT_COMP_3", nom: "Electivo Componente Formación Complementaria III", cr: 1, tipo: "T/M" },
+      { sem: "IX", cod: "153020", nom: "Gestión Ambiental", cr: 3, tipo: "T" },
+      { sem: "IX", cod: "153048137", nom: "Trabajo de Grado", cr: 3, tipo: "M" },
+      { sem: "IX", cod: "153048136", nom: "Práctica Profesional (6C)", cr: 6, tipo: "P" },
+      { sem: "IX", cod: "ELECT_DISC_ESP_4", nom: "Electivo Componente Disciplinar Específico IV", cr: 3, tipo: "T/M" }
+    ];
+
+    async function procesarPDF(input, programa) {
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      
+      let textoCompleto = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map(item => item.str).join(" ");
+        textoCompleto += "\n" + pageText;
+      }
+
+      if (programa === 'regencia') analizarRegencia(textoCompleto);
+      else if (programa === 'salud') analizarSalud(textoCompleto);
+      else if (programa === 'sst') analizarSST(textoCompleto);
+    }
+
+    function extraerDatosEstudiante(rawText) {
+      let nombre = "No identificado";
+      const mNom1 = rawText.match(/Nombre:\s*([A-ZÁÉÍÓÚÑ\s]+?)(Programa Actual:|Centro:|Datos del Estudiante)/i);
+      const mNom2 = rawText.match(/Estudiante:\s*(?:CC|TI)?\s*[\d.-]+\s*-\s*([A-ZÁÉÍÓÚÑ\s]+?)(Programa:|Fecha:|\d{4})/i);
+      if (mNom1) nombre = mNom1[1].trim();
+      else if (mNom2) nombre = mNom2[1].trim();
+
+      let doc = "No identificado";
+      const mDoc1 = rawText.match(/Estudiante:\s*(\d{6,12})/i);
+      const mDoc2 = rawText.match(/Estudiante:\s*(?:CC|TI)?\s*(\d{6,12})/i);
+      if (mDoc1) doc = mDoc1[1];
+      else if (mDoc2) doc = mDoc2[1];
+
+      let prog = "No identificado";
+      const mProg1 = rawText.match(/Programa Actual:\s*([A-ZÁÉÍÓÚÑ0-9\s\(\)]+?)(Centro:|Datos del Estudiante|VIGENCIA)/i);
+      const mProg2 = rawText.match(/Programa:\s*([A-ZÁÉÍÓÚÑ0-9\s\(\)\[\]-]+?)(20\d\d|Situaciones Académicas)/i);
+      if (mProg1) prog = mProg1[1].trim();
+      else if (mProg2) prog = mProg2[1].trim();
+
+      let centro = "Sede Nacional / No registrada";
+      const mCentro = rawText.match(/Centro:\s*([A-ZÁÉÍÓÚÑ\s]+?)(Datos del Estudiante|VIGENCIA|Este reporte)/i);
+      if (mCentro) centro = mCentro[1].trim();
+
+      let fecha = "Reciente";
+      const mFecha1 = rawText.match(/Fecha de Consulta:\s*([0-9A-Za-z-:\s]+)/i);
+      const mFecha2 = rawText.match(/Fecha de impresión\s*([0-9A-Za-zÁÉÍÓÚÑ\s:]+)/i);
+      if (mFecha1) fecha = mFecha1[1].trim();
+      else if (mFecha2) fecha = mFecha2[1].trim();
+
+      return { nombre, doc, prog, centro, fecha };
+    }
+
+    function extraerCursosAprobados(rawText) {
+      const cursosAprobados = new Map();
+
+      const regexRegIndiv = /(\d{10,14})\s+(\d{4,9})\s+([A-ZÁÉÍÓÚÑ\s\(\)-]+?)\s+(\d+)\s+([T|P|M|T\/P]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+\d{4}-\d{2}-\d{2}\s+(Aprobado)/gi;
+      let match;
+      while ((match = regexRegIndiv.exec(rawText)) !== null) {
+        const cod = match[2];
+        let nom = catalogoNombres[cod] || match[3].trim().replace(/\s+/g, ' ');
+        const cr = parseInt(match[4], 10);
+        const def = parseFloat(match[8]);
+        if (def >= 3.0) {
+          cursosAprobados.set(cod, { cod, nom, nota: def.toFixed(1), cr, origen: "Cursado y Aprobado" });
+        }
+      }
+
+      const regexAurea = /(\b\d{5,9}\b)\s+([A-ZÁÉÍÓÚÑ\s\(\)-]+?)\s+(\d\.\d)\s+(\d\.\d)\s+(\d\.\d)\s+(\d+)/g;
+      while ((match = regexAurea.exec(rawText)) !== null) {
+        const cod = match[1];
+        let nom = catalogoNombres[cod] || match[2].trim().replace(/\s+/g, ' ');
+        const def = parseFloat(match[5]);
+        const cr = parseInt(match[6], 10);
+        if (def >= 3.0 && !cursosAprobados.has(cod)) {
+          cursosAprobados.set(cod, { cod, nom, nota: def.toFixed(1), cr, origen: "Cursado y Aprobado" });
+        }
+      }
+
+      const regexHomologadas = /(\b\d{5,9}\b)\s+([A-ZÁÉÍÓÚÑ\s\(\)-]+?)\s+Homologación Aprobada\s+(\d\.\d)\s+(\d+)/g;
+      while ((match = regexHomologadas.exec(rawText)) !== null) {
+        const cod = match[1];
+        let nom = catalogoNombres[cod] || match[2].trim().replace(/\s+/g, ' ');
+        const def = parseFloat(match[3]);
+        const cr = parseInt(match[4], 10);
+        if (!cursosAprobados.has(cod)) {
+          cursosAprobados.set(cod, { cod, nom, nota: def.toFixed(1), cr, origen: "Homologación Externa" });
+        }
+      }
+
+      for (const [cCod, cNom] of Object.entries(catalogoNombres)) {
+        if (!cursosAprobados.has(cCod)) {
+          const regexDirect = new RegExp(`\\b${cCod}\\b[\\s\\S]{1,90}?(Aprobado|Homologación Aprobada)`, 'i');
+          const m = rawText.match(regexDirect);
+          if (m) {
+            const notaMatch = m[0].match(/(\d\.\d)/);
+            const n = notaMatch ? notaMatch[1] : "Aprobado";
+            if (n === "Aprobado" || parseFloat(n) >= 3.0) {
+              cursosAprobados.set(cCod, { cod: cCod, nom: cNom, nota: n, cr: 3, origen: "Aprobado en Historial" });
+            }
+          }
+        }
+      }
+
+      return cursosAprobados;
+    }
+
+    // --- ANÁLISIS REGENCIA DE FARMACIA ---
+    function analizarRegencia(rawText) {
+      const info = extraerDatosEstudiante(rawText);
+      document.getElementById("reg-nombre").innerText = info.nombre;
+      document.getElementById("reg-doc").innerText = info.doc;
+      document.getElementById("reg-prog").innerText = info.prog;
+      document.getElementById("reg-centro").innerText = info.centro;
+      document.getElementById("reg-fecha").innerText = info.fecha;
+      document.getElementById("nav-user-name").innerText = info.nombre;
+
+      const cursosAprobados = extraerCursosAprobados(rawText);
+      const homologadasMap = {};
+      const usados = new Set();
+      const noEquivalentes = [];
+
+      const directas = {
+        "434206": "80017", "80017": "80017", "40001": "40002", "40002": "40002",
+        "200612": "200612", "200610": "200610", "221120": "200610", "151009": "151009",
+        "90015": "90015", "90030": "900001", "900001": "900001", "900002": "900002",
+        "90008": "900002", "90003": "90003", "40003": "90003", "211622": "151003",
+        "151003": "151003", "201102": "201102", "151006": "151006", "401503": "401503",
+        "100103": "150001", "150001": "150001", "100416": "100416", "153218334": "153218334",
+        "152001": "153218352", "153218352": "153218352", "201421": "201421", "153218335": "153218335",
+        "201103": "201103", "301504": "301504", "153218339": "153218339", "301505": "301505",
+        "153218338": "153218338", "301502": "301502", "152002": "152002"
+      };
+
+      cursosAprobados.forEach((data, cod) => {
+        if (directas[cod]) {
+          homologadasMap[directas[cod]] = { origen: `${data.nom} (${data.cod}) [${data.origen}]`, nota: data.nota };
+          usados.add(cod);
+        }
+      });
+
+      if (cursosAprobados.has("152003")) {
+        const f = cursosAprobados.get("152003");
+        homologadasMap["153218336"] = { origen: `Farmacología I (Homol. por 152003 - ${f.origen})`, nota: f.nota };
+        homologadasMap["153218337"] = { origen: `Farmacología II (Homol. por 152003 - ${f.origen})`, nota: f.nota };
+        usados.add("152003");
+      }
+
+      if (cursosAprobados.has("301506") && cursosAprobados.has("301507")) {
+        homologadasMap["153218334"] = { origen: "Atención Farmacéutica (301506) + Farmacia Hospitalaria (301507)", nota: "Homologado" };
+        usados.add("301506");
+        usados.add("301507");
+      }
+
+      const bolsaIBC = ["112001", "50019", "40004", "105020", "358028", "40006", "90007", "102609", "110013", "102012"];
+      bolsaIBC.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_IBC_1"]) { homologadasMap["ELECT_IBC_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_IBC_2"]) { homologadasMap["ELECT_IBC_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      const bolsaComp = ["80011", "80007", "80003", "80020", "80002", "80005", "80010", "80012", "80008"];
+      bolsaComp.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_COMP_1"]) { homologadasMap["ELECT_COMP_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_COMP_2"]) { homologadasMap["ELECT_COMP_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      const bolsaDisc = ["15001", "151017", "201422", "103350", "151001", "151054", "151057", "151056", "153218340", "153218341", "153218342", "153218344", "153218343", "153218345"];
+      bolsaDisc.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_DISC_1"]) { homologadasMap["ELECT_DISC_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_2"]) { homologadasMap["ELECT_DISC_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      cursosAprobados.forEach((data, cod) => {
+        if (!usados.has(cod)) {
+          let motivo = "No tiene equivalencia en la Resolución 1309 ni en el Acuerdo 040.";
+          if (cod === "200611") motivo = "Pensamiento Lógico y Matemático no aplica para Regencia (requiere Fundamentos de Matemáticas).";
+          else if (cod === "151010" || cod === "151002") motivo = "Morfofisiología I y II no equivalen al curso específico de Morfofisiología de Regencia (401503).";
+          else if (cod === "151018") motivo = "Farmacología de otros pregrados no homologa la línea disciplinar de Farmacología de Regencia.";
+          else if (cod.startsWith("1510") || cod.startsWith("1530")) motivo = "Asignatura propia de otras áreas de la salud; bolsas electivas completas.";
+          
+          noEquivalentes.push({ cod: data.cod, nom: catalogoNombres[cod] || data.nom, cr: data.cr || 3, motivo });
+        }
+      });
+
+      renderResultados('reg', mallaRegencia, homologadasMap, noEquivalentes, cursosAprobados.size);
+    }
+
+    // --- ANÁLISIS ADMINISTRACIÓN EN SALUD ---
+    function analizarSalud(rawText) {
+      const info = extraerDatosEstudiante(rawText);
+      document.getElementById("sal-nombre").innerText = info.nombre;
+      document.getElementById("sal-doc").innerText = info.doc;
+      document.getElementById("sal-prog").innerText = info.prog;
+      document.getElementById("sal-centro").innerText = info.centro;
+      document.getElementById("sal-fecha").innerText = info.fecha;
+      document.getElementById("nav-user-name").innerText = info.nombre;
+
+      const cursosAprobados = extraerCursosAprobados(rawText);
+      const homologadasMap = {};
+      const usados = new Set();
+      const noEquivalentes = [];
+
+      const equivalenciasDirectas = {
+        "80017": "80017", "40002": "40002", "200611": "200611", "151009": "151009", "200610": "200610",
+        "900001": "900001", "151010": "152978028", "152978028": "152978028", "112001": "112001",
+        "151030": "151030", "151001": "151001", "900002": "900002", "151004": "151004", "40003": "40003",
+        "900003": "900003", "15001": "15001", "151003": "151003", "151005": "151005", "150001": "150001",
+        "403037": "150001", "900005": "900005", "151012": "152978032", "152978032": "152978032",
+        "151019": "151019", "151016": "152978035", "152978035": "152978035", "151027": "151027",
+        "151013": "151013", "151021": "151021", "151025": "151025", "151051": "151051"
+      };
+
+      cursosAprobados.forEach((data, cod) => {
+        if (equivalenciasDirectas[cod] && !homologadasMap[equivalenciasDirectas[cod]]) {
+          homologadasMap[equivalenciasDirectas[cod]] = { origen: `${data.nom} (${data.cod}) [${data.origen}]`, nota: data.nota };
+          usados.add(cod);
+        }
+      });
+
+      if (cursosAprobados.has("151017") && !homologadasMap["152978029"]) {
+        const sp = cursosAprobados.get("151017");
+        homologadasMap["152978029"] = { origen: `Salud Pública (151017 - Homologado a Salud Pública I)`, nota: sp.nota };
+        usados.add("151017");
+      }
+
+      if (cursosAprobados.has("40004") && !homologadasMap["ELECT_SOC_SOLID"]) {
+        const d = cursosAprobados.get("40004");
+        homologadasMap["ELECT_SOC_SOLID"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota };
+        usados.add("40004");
+      }
+
+      if (cursosAprobados.has("120002") && !homologadasMap["ELECT_ECON_ADMIN"]) {
+        const d = cursosAprobados.get("120002");
+        homologadasMap["ELECT_ECON_ADMIN"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota };
+        usados.add("120002");
+      }
+
+      const bolsaDiscComun = ["153022", "153024", "151050", "151054", "151057", "151053", "151055", "151056"];
+      bolsaDiscComun.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_DISC_COM_1"]) { homologadasMap["ELECT_DISC_COM_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_COM_2"]) { homologadasMap["ELECT_DISC_COM_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_COM_3"]) { homologadasMap["ELECT_DISC_COM_3"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      const bolsaDiscEspec = [
+        "151033", "151034", "152978105", "152978109", "153027", "152978106", "152978108", "152978107",
+        "152978111", "151042", "151043", "152978110", "153025", "151044", "151039", "151046", "151041", "151045", "151047", "151038"
+      ];
+      bolsaDiscEspec.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_DISC_ESP_1"]) { homologadasMap["ELECT_DISC_ESP_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_ESP_2"]) { homologadasMap["ELECT_DISC_ESP_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_ESP_3"]) { homologadasMap["ELECT_DISC_ESP_3"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_ESP_4"]) { homologadasMap["ELECT_DISC_ESP_4"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      const bolsaComplem = ["80020", "80003", "80012", "80011", "80002", "80008", "80004", "100104", "80007"];
+      bolsaComplem.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_COMP_1"]) { homologadasMap["ELECT_COMP_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_COMP_2"]) { homologadasMap["ELECT_COMP_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_COMP_3"]) { homologadasMap["ELECT_COMP_3"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      cursosAprobados.forEach((data, cod) => {
+        if (!usados.has(cod)) {
+          let motivo = "Curso del plan 17744 sin equivalencia en la Resolución 24218.";
+          if (cod === "151002") motivo = "Eliminado en Resolución 24218 (contenidos integrados en Morfofisiología).";
+          else if (cod === "151006") motivo = "Eliminado del plan de estudios (Tabla 10).";
+          else if (cod === "151014") motivo = "Eliminado por especificidad médica no requerida.";
+          else if (cod === "151018") motivo = "Eliminado del plan; ajustado en Farmacoeconomía.";
+          else if (cod === "151015") motivo = "Eliminado; redistribuido en otros cursos de gestión.";
+          else if (cod === "151011") motivo = "Eliminado; redistribuido en administración y facturación.";
+          else if (cod === "151020" || cod === "151024") motivo = "Proceso Administrativo Asistencial I y II sustituidos por Procesos Administrativos y Facturación.";
+          else if (cod === "151023") motivo = "Eliminado; sustituido por Gestión e Innovación en Salud.";
+          else if (cod === "151022" || cod === "151026" || cod === "151028") motivo = "Prácticas fragmentadas sustituidas por Práctica Profesional única de 6 créditos.";
+          else if (cod.startsWith("1510") || cod.startsWith("1530") || cod.startsWith("800")) motivo = "Asignatura electiva con cupos completados.";
+
+          noEquivalentes.push({ cod: data.cod, nom: catalogoNombres[cod] || data.nom, cr: data.cr || 3, motivo });
+        }
+      });
+
+      renderResultados('sal', mallaSalud, homologadasMap, noEquivalentes, cursosAprobados.size);
+    }
+
+    // --- ANÁLISIS SEGURIDAD Y SALUD EN EL TRABAJO (ACUERDO 20 DE 2021) ---
+    function analizarSST(rawText) {
+      const info = extraerDatosEstudiante(rawText);
+      document.getElementById("sst-nombre").innerText = info.nombre;
+      document.getElementById("sst-doc").innerText = info.doc;
+      document.getElementById("sst-prog").innerText = info.prog;
+      document.getElementById("sst-centro").innerText = info.centro;
+      document.getElementById("sst-fecha").innerText = info.fecha;
+      document.getElementById("nav-user-name").innerText = info.nombre;
+
+      const cursosAprobados = extraerCursosAprobados(rawText);
+      const homologadasMap = {};
+      const usados = new Set();
+      const noEquivalentes = [];
+
+      // Homologaciones directas según Acuerdo 20 de 2021
+      const mapeoSST = {
+        "80017": "80017",
+        "40002": "40002", "40001": "40002",
+        "200611": "200611",
+        "200610": "200610",
+        "40003": "40003", "50010": "40003",
+        "112001": "112001",
+        "900001": "900001",
+        "900002": "900002",
+        "900003": "900003",
+        "900005": "900005",
+        "151009": "151009",
+        "401503": "152978028", "152978028": "152978028", // Morfofisiología
+        "151001": "151001", // Bioética
+        "15001": "15001",   // Telesalud
+        "153026": "153028", "153028": "153028", // Administración en Salud
+        "153001": "153001", // Fundamentos SST
+        "153002": "153002", // Fundamentos Salud Pública
+        "150001": "150001", // Fundamentos de Investigación
+        "151005": "151005", // Patología General
+        "151003": "151003", // Bioestadística
+        "151030": "151030", // Bioquímica
+        "153024": "153024", // Sistemas Integrados de Gestión
+        "153010": "153010", // Condiciones Organización Trabajo
+        "153004": "153048231", "153048231": "153048231", // Medicina Preventiva y Trabajo
+        "153006": "153048232", "153048232": "153048232", // Condiciones Tarea I
+        "153008": "153048235", "153048235": "153048235", // Condiciones Seguridad I
+        "153003": "153048234", "153048234": "153048234", // Vigilancia Epidemiológica
+        "153007": "153048233", "153048233": "153048233", // Condiciones Tarea II
+        "153009": "153048236", "153048236": "153048236", // Condiciones Seguridad II
+        "153005": "153048133", "153048133": "153048133", // Condiciones Ambiente Trabajo I
+        "153017": "153048138", "153048138": "153048138", // Legislación SST
+        "153020": "153020", // Gestión Ambiental
+        "153012": "153048137", "153048137": "153048137", // Trabajo de Grado
+        "153011": "153048136", "153048136": "153048136"  // Práctica Profesional
+      };
+
+      cursosAprobados.forEach((data, cod) => {
+        if (mapeoSST[cod] && !homologadasMap[mapeoSST[cod]]) {
+          homologadasMap[mapeoSST[cod]] = { origen: `${data.nom} (${data.cod}) [${data.origen}]`, nota: data.nota };
+          usados.add(cod);
+        }
+      });
+
+      // Electivas Interdisciplinares
+      if (cursosAprobados.has("40004") && !homologadasMap["ELECT_SOC_SOLID"]) {
+        homologadasMap["ELECT_SOC_SOLID"] = { origen: `Inclusión Social (40004)`, nota: cursosAprobados.get("40004").nota };
+        usados.add("40004");
+      }
+      if (cursosAprobados.has("120002") && !homologadasMap["ELECT_ECON_ADMIN"]) {
+        homologadasMap["ELECT_ECON_ADMIN"] = { origen: `Responsabilidad Social (120002)`, nota: cursosAprobados.get("120002").nota };
+        usados.add("120002");
+      }
+
+      // Electivas Disciplinares Comunes
+      const bolsaDiscComun = ["151050", "151054", "151057", "151053", "151055", "151056", "153022"];
+      bolsaDiscComun.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_DISC_COM_1"]) { homologadasMap["ELECT_DISC_COM_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_COM_2"]) { homologadasMap["ELECT_DISC_COM_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      // Electivas Disciplinares Específicas de SST (Acuerdo 20 de 2021)
+      const bolsaDiscEspec = [
+        "153048225", "153048226", "153048228", "153048227", "153016", "153048237", "153048229",
+        "153013", "153014", "153015", "153018", "153019", "153021", "153023"
+      ];
+      bolsaDiscEspec.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_DISC_ESP_1"]) { homologadasMap["ELECT_DISC_ESP_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_ESP_2"]) { homologadasMap["ELECT_DISC_ESP_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_ESP_3"]) { homologadasMap["ELECT_DISC_ESP_3"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_DISC_ESP_4"]) { homologadasMap["ELECT_DISC_ESP_4"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      // Electivas Complementarias
+      const bolsaComp = ["80020", "80003", "80002", "80004", "80007", "80005", "80010", "404086996", "400004", "80011", "80012", "80008", "100104"];
+      bolsaComp.forEach(cod => {
+        if (cursosAprobados.has(cod) && !usados.has(cod)) {
+          const d = cursosAprobados.get(cod);
+          if (!homologadasMap["ELECT_COMP_1"]) { homologadasMap["ELECT_COMP_1"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_COMP_2"]) { homologadasMap["ELECT_COMP_2"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+          else if (!homologadasMap["ELECT_COMP_3"]) { homologadasMap["ELECT_COMP_3"] = { origen: `${d.nom} (${d.cod})`, nota: d.nota }; usados.add(cod); }
+        }
+      });
+
+      // Cursos No Homologables
+      cursosAprobados.forEach((data, cod) => {
+        if (!usados.has(cod)) {
+          let motivo = "Curso no relacionado en la tabla de equivalencias de SST (Acuerdo 20 de 2021).";
+          if (cod === "200612") motivo = "Fundamentos de Matemáticas no aplica en SST (el plan exige Pensamiento Lógico y Matemático).";
+          else if (cod.startsWith("1510") || cod.startsWith("1520") || cod.startsWith("3015")) motivo = "Asignatura propia de Regencia o Administración en Salud; cupos electivos de SST ya cubiertos.";
+
+          noEquivalentes.push({ cod: data.cod, nom: catalogoNombres[cod] || data.nom, cr: data.cr || 3, motivo });
+        }
+      });
+
+      renderResultados('sst', mallaSST, homologadasMap, noEquivalentes, cursosAprobados.size);
+    }
+
+    // Renderizador genérico
+    function renderResultados(prefijo, malla, homologadas, noEquiv, totalAprobadas) {
+      let divTarget = "regencia";
+      if (prefijo === 'sal') divTarget = "salud";
+      if (prefijo === 'sst') divTarget = "sst";
+
+      document.getElementById(`resultados-${divTarget}`).style.display = "block";
+
+      const totalHom = Object.keys(homologadas).length;
+      const totalPend = malla.length - totalHom;
+      document.getElementById(`${prefijo}-kpi-ident`).innerText = totalAprobadas;
+      document.getElementById(`${prefijo}-kpi-homol`).innerText = totalHom;
+      document.getElementById(`${prefijo}-kpi-pend`).innerText = totalPend;
+      document.getElementById(`${prefijo}-kpi-sobr`).innerText = noEquiv.length;
+
+      const tbodyNoEquiv = document.getElementById(`${prefijo}-tbodyNoEquiv`);
+      if (noEquiv.length === 0) {
+        tbodyNoEquiv.innerHTML = `<tr><td colspan="4" style="color:#1e7e34; text-align:center;">Todas las asignaturas registradas fueron homologadas con éxito.</td></tr>`;
+      } else {
+        tbodyNoEquiv.innerHTML = noEquiv.map(m => `
+          <tr>
+            <td><code>${m.cod}</code></td>
+            <td><strong>${m.nom}</strong></td>
+            <td style="text-align:center;">${m.cr}</td>
+            <td style="color:#c53030;">${m.motivo}</td>
+          </tr>
+        `).join('');
+      }
+
+      const pendientes = malla.filter(c => !homologadas[c.cod]);
+      const tbodyPend = document.getElementById(`${prefijo}-tbodyPendientes`);
+      tbodyPend.innerHTML = pendientes.map(c => `
+        <tr>
+          <td style="text-align:center; font-weight:bold;">${c.sem}</td>
+          <td><code>${c.cod}</code></td>
+          <td><strong>${c.nom}</strong></td>
+          <td style="text-align:center;">${c.cr}</td>
+          <td style="text-align:center;">${c.tipo}</td>
+          <td>${c.nuevo ? '<span class="badge-warn">Curso Exclusivo / Sin Equivalencia Previa</span>' : '<span class="muted">Pendiente por cursar</span>'}</td>
+        </tr>
+      `).join('');
+
+      const tbodyHom = document.getElementById(`${prefijo}-tbodyHomologadas`);
+      tbodyHom.innerHTML = malla.filter(c => homologadas[c.cod]).map(c => `
+        <tr>
+          <td style="text-align:center; font-weight:bold;">${c.sem}</td>
+          <td><code>${c.cod}</code></td>
+          <td><strong>${c.nom}</strong></td>
+          <td style="text-align:center;">${c.cr}</td>
+          <td style="color:#1e7e34; font-size:12px;">${homologadas[c.cod].origen}</td>
+          <td style="text-align:center; font-weight:bold;">${homologadas[c.cod].nota}</td>
+        </tr>
+      `).join('');
+    }
+  </script>
+
+</body>
+</html>
